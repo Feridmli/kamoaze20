@@ -1,4 +1,4 @@
-// ===================== MAIN.JS (YENİLƏNMİŞ SÜRÜM - BigNumber Düzəlişi ilə) =====================
+// ===================== MAIN.JS (YENİLƏNMİŞ SÜRÜM - Təhlükəsiz Token ID) =====================
 import { ethers } from "ethers";
 import { Seaport } from "@opensea/seaport-js";
 
@@ -43,7 +43,7 @@ function notify(msg, timeout = 3000) {
     }, timeout);
 }
 
-// DÜZƏLİŞ: Daha etibarlı Ethers v5 BigNumber serializasiyası
+// Daha etibarlı Ethers v5 BigNumber serializasiyası
 function orderToJsonSafe(obj) {
   return JSON.parse(
     JSON.stringify(obj, (k, v) => {
@@ -143,7 +143,7 @@ async function loadNFTs() {
     loadedCount += batch.length;
 
     for (const nft of batch) {
-      const tokenid = nft.tokenid;
+      const tokenid = nft.tokenid; // Token ID-ni burada alırıq
       let name = nft.name || `Bear #${tokenid}`;
       let image = nft.image;
       if (image?.startsWith("ipfs://"))
@@ -158,8 +158,7 @@ async function loadNFTs() {
         <div class="nft-actions">
             <input type="number" min="0" step="0.01" class="price-input" placeholder="Qiymət (APE)">
             <button class="wallet-btn buy-btn" data-id="${tokenid}">Buy</button>
-            <button class="wallet-btn list-btn" data-token="${tokenid}">List</button>
-        </div>
+            <button class="wallet-btn list-btn" data-token="${tokenid}">List</button> </div>
       `;
       marketplaceDiv.appendChild(card);
 
@@ -167,7 +166,13 @@ async function loadNFTs() {
         await buyNFT(nft);
       };
 
-      card.querySelector(".list-btn").onclick = async () => {
+      // 🔴 DÜZƏLİŞ 2: Token ID-ni klik zamanı data atributundan etibarlı şəkildə oxuyuruq
+      card.querySelector(".list-btn").onclick = async (e) => {
+        const listBtn = e.currentTarget;
+        const tokenidFromAttr = listBtn.getAttribute("data-token"); // ID-ni atributdan oxu
+
+        if (!tokenidFromAttr) return notify("XƏTA: Token ID tapılmadı.");
+
         const priceStr = card.querySelector(".price-input").value.trim();
         if (!priceStr) return notify("Qiymət boşdur");
         let priceWei;
@@ -178,7 +183,7 @@ async function loadNFTs() {
           return notify("Qiymət düzgün deyil");
         }
 
-        await listNFT(tokenid, priceWei, card);
+        await listNFT(tokenidFromAttr, priceWei, card);
       };
     }
   } catch (err) {
@@ -267,7 +272,10 @@ async function buyNFT(nftRecord) {
 async function listNFT(tokenid, priceWei, card) {
   if (!signer || !seaport) return alert("Cüzdan qoşulmayıb!");
 
-  // 🔴 DÜZƏLİŞİN ƏSAS HİSSƏSİ: tokenid-ni BigNumber obyektinə çeviririk
+  // Token ID-nin boş olub-olmamasını bir daha yoxlayırıq (dəyər artıq string olmalıdır)
+  if (!tokenid || tokenid.length === 0) return alert("Listing xətası: Token ID boşdur.");
+
+  // BigNumber xətasının qarşısını almaq üçün tokenid-ni BigNumber obyektinə çeviririk
   const tokenIdBN = ethers.BigNumber.from(tokenid.toString()); 
   
   const seller = (await signer.getAddress()).toLowerCase();
@@ -310,7 +318,6 @@ async function listNFT(tokenid, priceWei, card) {
       {
         itemType: 2,
         token: NFT_CONTRACT_ADDRESS,
-        // identifierOrCriteria üçün BN-in string formatı istifadə olunur
         identifierOrCriteria: tokenIdBN.toString(), 
         startAmount: "1",
         endAmount: "1",
@@ -389,4 +396,4 @@ window.buyNFT = buyNFT;
 window.listNFT = listNFT;
 window.loadNFTs = loadNFTs;
 
-// ===================== END FILE 
+// ===================== END FILE =============================
