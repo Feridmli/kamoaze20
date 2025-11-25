@@ -6,7 +6,7 @@ import { Seaport } from "@opensea/seaport-js";
 const BACKEND_URL =
   import.meta.env.VITE_BACKEND_URL ||
   window?.__BACKEND_URL__ ||
-  "https://kamoaze10.onrender.com";
+  "https://kamoaze15.onrender.com";
 
 const NFT_CONTRACT_ADDRESS =
   import.meta.env.VITE_NFT_CONTRACT ||
