@@ -233,7 +233,7 @@ async function listNFT(tokenid, priceWei, card) {
       await tx.wait();
     }
     const orderInput = {
-      offer: [{ itemType: 3, token: NFT_CONTRACT_ADDRESS, identifier: tokenStr }],
+      offer: [{ itemType: 2, token: NFT_CONTRACT_ADDRESS, identifier: tokenStr }],
       consideration: [{ itemType: 0, token: ZERO_ADDRESS, identifier: "0", amount: priceWei.toString(), recipient: seller }],
       startTime: (Math.floor(Date.now() / 1000) - 60).toString(),
       endTime: (Math.floor(Date.now() / 1000) + 30 * 86400).toString(),
