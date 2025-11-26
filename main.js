@@ -1,4 +1,7 @@
 // ===================== MAIN.JS (FINAL V1.9 CANONICAL — FIXED CRITICAL) =====================
+import { Buffer } from "buffer";
+window.Buffer = window.Buffer || Buffer;
+
 import { ethers } from "ethers";
 import { Seaport } from "@opensea/seaport-js";
 
