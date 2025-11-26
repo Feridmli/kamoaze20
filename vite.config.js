@@ -1,28 +1,24 @@
 import { defineConfig } from "vite";
-import path from 'path';
+import path from "path";
 
 export default defineConfig({
   root: ".",
   resolve: {
     alias: {
-      buffer: 'buffer/',
+      buffer: "buffer", 
     },
   },
   define: {
-    'global': 'window',
+    global: "window",
   },
   build: {
     outDir: "dist",
     chunkSizeWarningLimit: 2000,
     rollupOptions: {
       input: path.resolve(__dirname, "index.html"),
-      manualChunks(id) {
-        if (id.includes("node_modules")) return "vendor";
-      },
-      external: ["http", "https", "os", "url"]
-    }
+    },
   },
   server: {
-    port: 5173
-  }
+    port: 5173,
+  },
 });
